@@ -2,7 +2,12 @@
 const TOKKEN="5187338885:AAFvQmAg38G0fpLAvcYPrneZbWY-tkHtXU0";
 const TelegramApi=require("node-telegram-bot-api");
 const bot= new TelegramApi(TOKKEN,{polling:true});
-
+const express = require('express')
+const app = express()
+const port = 3002
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+  })
 //масив для id повідомлень(потрібен для очистки)
 let messageId=0;
 const removeAllMessage=require("./helper/removeMessage")//приймає обєкт бот та масив ід повідомлень(bot,messageId)
