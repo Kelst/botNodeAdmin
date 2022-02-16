@@ -1,16 +1,16 @@
-    const gplay = require('google-play-scraper');
+const gplay = require('google-play-scraper');
 const { penndingApp } = require('../helper/modeApp');
-
+const hideApp=require("./hideApp")
 module.exports= async function  (pendingAp,googleApp){
     let res;
  await   pendingAp.forEach(async element => {
  await   gplay.app({appId: `${element.bundle}`})
-    .then(()=>{
-        if(googleApp.filter(i=>i._id==element._id).length===0){
-            googleApp.push(element)
-        }
+    .then(async()=>{
+       await hideApp({app_id:element._id})
+       
     }, console.log).catch(er=>console.log(er))
     });
 
 
 } 
+ 

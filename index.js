@@ -45,7 +45,8 @@ const state={
         hideApp:[],
         banApp:[],
         penndingApp:[],
-        chekGoogle:[]
+        chekGoogle:[],
+        moderateApp:[],
     },
     mode:"",
     user:{
@@ -60,6 +61,7 @@ const state={
     keyboard_banApp:[],
     keyboard_pendingApp:[],
     keyboard_checkGoogle:[],
+    keyboard_moderate:[],
     control:{
         idApp:"",
         mode:""
@@ -96,6 +98,7 @@ const setImageUrl=require("./requestApi/setImageUrl")
 const getStateApp=require("./requestApi/getStateApp")
 const setUrl=require("./requestApi/setURL")
 const setNaming=require("./requestApi/setNaming")
+const setModerate=require("./requestApi/moderateApp")
 //.................._........................
 
 //підключення клавіатури
@@ -111,6 +114,7 @@ const setRedirectGeo = require("./requestApi/setRedirectGeo");
 const setPrice = require("./requestApi/setPrice");
 const checkGooglePlay = require("./requestApi/checkGooglePlay");
 const setURL = require("./requestApi/setURL");
+const getModerateApp = require("./requestApi/getModerateApp");
 //перевірка пріл якщо пройшли модерку
 async function  checkAllPrills(){
   
@@ -122,9 +126,10 @@ async function  checkAllPrills(){
     state.app.hideApp=stateApp.hideApp; 
     state.app.inuseApp=stateApp.inuseApp;
     state.app.penndingApp=stateApp.pendingApp;
+    state.app.moderateApp=stateApp.moderateApp
        
       
-     await   checkGooglePlay(state.app.penndingApp,state.app.chekGoogle)
+     await   checkGooglePlay(state.app.moderateApp,state.app.chekGoogle) 
       
 }
 //
@@ -146,6 +151,8 @@ bot.onText(/\/start/, async msg=>{
     state.app.hideApp=stateApp.hideApp;
     state.app.inuseApp=stateApp.inuseApp;
     state.app.penndingApp=stateApp.pendingApp;
+    state.app.moderateApp=stateApp.moderateApp;
+    await   checkGooglePlay(state.app.moderateApp,state.app.chekGoogle)
      await checkAllPrills()
 
     setTimeout(el=>{
@@ -178,7 +185,9 @@ bot.on("callback_query",async query=>{
         nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
 
         state.mode=bot_const_menu.addApp
-        bot.sendMessage(id,"Введите информацию о приложении в формате:\nBit Vegas*\n400*\ngambling*\nbundle*",{
+        bot.sendMessage(id,`Введи початкову інфу по апці в форматі:\n- Application Name*application type*package name
+        \napplication type може бути: gambling/betting/finances/crypto/dating/subscriptions/nutra
+        \nПриклад: Bit Vegas*gambling*com.bit.vegas`,{
             reply_markup:{
                 inline_keyboard:nav_keyboard
             }
@@ -193,26 +202,25 @@ bot.on("callback_query",async query=>{
             nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
 
             state.mode=bot_const_menu.awaConfirm;
-          
-            state.app.confirmApp=await getConfirmApp();
+            state.app.moderateApp=await getModerateApp();
 
-            if(state.app.confirmApp.length>0){
-                state.keyboard_confirm_app=state.app.confirmApp.map(el=>{
+            if(state.app.moderateApp.length>0){
+                state.keyboard_moderate=state.app.moderateApp.map(el=>{
                     return  [
                         {
-                            text:`${el.name}`,callback_data:`aw_confirm|${el.bundle}`
+                            text:`${el.name} (${el.type})`,callback_data:`aw_confirm|${el.bundle}`
                         }
                     ]
                 })
              
                 // nav.push({message:"Ожидают подтверждения",keyboard:[...keyboard_confirm_app,...nav_keyboard]})
-                bot.sendMessage(id,"Ожидают подтверждения",{
+                bot.sendMessage(id,"Очікують модерації",{
                     reply_markup:{
-                        inline_keyboard:[...state.keyboard_confirm_app,nav_keyboard[1]]
+                        inline_keyboard:[...state.keyboard_moderate,nav_keyboard[1]]
                     }
                 })
             }else{
-                bot.sendMessage(id,"нет прил для подтверждения оплаты",{
+                bot.sendMessage(id,"ПУСТО!",{
                     reply_markup:{
                         inline_keyboard:[nav_keyboard[1]]
                     }
@@ -237,7 +245,7 @@ bot.on("callback_query",async query=>{
                 state.keyboard_active_app=state.app.activeApp.map(el=>{
                     return  [
                         {
-                            text:`${el.name}`,callback_data:`act_app|${el.bundle}`
+                            text:`${el.name} (${el.type})`,callback_data:`act_app|${el.bundle}`
                         }
                     ]
                 })
@@ -272,19 +280,19 @@ bot.on("callback_query",async query=>{
                 state.keyboard_inUse_app=state.app.inuseApp.map(el=>{
                     return  [
                         {
-                            text:`${el.name}`,callback_data:`in_use|${el.bundle}`
+                            text:`${el.name} (${el.type})`,callback_data:`in_use|${el.bundle}`
                         }
                     ]
                 })
                 
              
-                bot.sendMessage(id,"Прилы которые используются",{
+                bot.sendMessage(id,"В розробці",{
                     reply_markup:{
                         inline_keyboard:[...state.keyboard_inUse_app,nav_keyboard[1]]
                     }
                 })
             }else{
-                bot.sendMessage(id,"нет активных",{
+                bot.sendMessage(id,"ПУСТО!",{
                     reply_markup:{
                         inline_keyboard:nav_keyboard[1]
                     }
@@ -307,19 +315,19 @@ bot.on("callback_query",async query=>{
                 state.keyboard_hideApp=state.app.hideApp.map(el=>{
                     return  [
                         {
-                            text:`${el.name}`,callback_data:`hide_app|${el.bundle}`
+                            text:`${el.name} (${el.type})`,callback_data:`hide_app|${el.bundle}`
                         }
                     ] 
                 })
                 
              
-                bot.sendMessage(id,"Скрытые прилы",{
+                bot.sendMessage(id,"Сховані",{
                     reply_markup:{
                         inline_keyboard:[...state?.keyboard_hideApp,nav_keyboard[1]]
                     }
                 })
             }else{
-                bot.sendMessage(id,"нет cкрытыхприл",{
+                bot.sendMessage(id,"ПУСТО!",{
                     reply_markup:{
                         inline_keyboard:nav_keyboard[1]
                     }
@@ -340,19 +348,19 @@ bot.on("callback_query",async query=>{
                     state.keyboard_banApp=state.app.banApp.map(el=>{
                         return  [
                             {
-                                text:`${el.name}`,callback_data:`ban_app|${el.bundle}`
+                                text:`${el.name} (${el.type})`,callback_data:`ban_app|${el.bundle}`
                             }
                         ]
                     })
                     
                  
-                    bot.sendMessage(id,"Забаненные прилы",{
+                    bot.sendMessage(id,"Заблоковані",{
                         reply_markup:{
                             inline_keyboard:[...state.keyboard_banApp,nav_keyboard[1]]
                         }
                     })
                 }else{
-                    bot.sendMessage(id,"нет забаненныех прил ",{
+                    bot.sendMessage(id,"ПУСТО!",{
                         reply_markup:{
                             inline_keyboard:[nav_keyboard[1] ] 
                         }
@@ -375,19 +383,19 @@ bot.on("callback_query",async query=>{
                     state.keyboard_pendingApp=state.app.penndingApp.map(el=>{
                         return  [
                             {
-                                text:`${el.name}`,callback_data:`pendding_app|${el.bundle}`
+                                text:`${el.name} (${el.type})`,callback_data:`pendding_app|${el.bundle}`
                             }
                         ]
                     })
                     
                  
-                    bot.sendMessage(id,"Прилы в разработке",{
+                    bot.sendMessage(id,"В розробці",{
                         reply_markup:{
                             inline_keyboard:[...state.keyboard_pendingApp,nav_keyboard[1]]
                         }
                     })
                 }else{
-                    bot.sendMessage(id,"нет Прил в разработке",{
+                    bot.sendMessage(id,"ПУСТО!",{
                         reply_markup:{
                             inline_keyboard:[nav_keyboard[1] ] 
                         }
@@ -408,7 +416,7 @@ bot.on("callback_query",async query=>{
                     state.keyboard_checkGoogle=state.app.chekGoogle.map(el=>{
                         return  [
                             {
-                                text:`${el.name}`,callback_data:`chekGooglePlay|${el.bundle}`
+                                text:`${el.name} (${el.type})`,callback_data:`chekGooglePlay|${el.bundle}`
                             }
                         ]
                     })
@@ -433,7 +441,7 @@ bot.on("callback_query",async query=>{
         case bot_const_menu.home: 
             removeAllMessage(id,bot,messageId);
             state.mode="";
-            const homeState={...nav[0]}
+          
             nav.splice(1,nav.length)
             
             bot.sendMessage(id,`Здоров був друже \nКонтроль всіх апок тут`,{
@@ -464,14 +472,14 @@ bot.on("callback_query",async query=>{
      
     
         const {id}=msg.chat; 
+        if(msg.text==="/start") return 
         
-        if((state.mode===bot_const_menu.addApp)&&(msg.text.split("/")[0]=!"start")){
+        if((state.mode===bot_const_menu.addApp)){
            const text=msg.text.split("*");
            const app={ 
             name:text[0]||"empty name",
-            price:text[1]||400,
-            type:text[2]||"",
-            bundle:text[3]||"test.bundle",
+            type:text[1]||"",
+            bundle:text[2]||"test.bundle",
             url:"",
             redirect_traff_url:"",
             redirect_traff_percent:3 
@@ -511,74 +519,98 @@ bot.on("callback_query",async query=>{
     if(data.indexOf("aw_confirm|")!=-1){
         removeAllMessage(id,bot,messageId)
     
-        nav.push({message:"Ожидают подтверждения",keyboard:[...state.keyboard_confirm_app,...nav_keyboard]});
-        const choseApp=state.app.confirmApp.find(el=>{return el.bundle===data.split("|")[1]});
-        const approvePay= [[
-            {
-                text:`Подтвердить оплату`,callback_data:`approvePay|${data.split("|")[1]}`
-            }
-        ],  [
-            {
-                text:`Контакт покупателя`,callback_data:`contact_user|${choseApp.user_confirm}`
-            }
-        ], [
-            {
-                text:`Отклонить`,callback_data:`cancel_pay|${data.split("|")[1]}|${choseApp.user_confirm}`
-            }
-        ],] 
+        
+        const choseApp=state.app.moderateApp.find(el=>{return el.bundle===data.split("|")[1]});
+        const approvePay= [
+        //     [
+        //     {
+        //         text:`Подтвердить оплату`,callback_data:`approvePay|${data.split("|")[1]}`
+        //     }
+        // ],  [
+        //     {
+        //         text:`Контакт покупателя`,callback_data:`contact_user|${choseApp.user_confirm}`
+        //     }
+        // ], [
+        //     {
+        //         text:`Отклонить`,callback_data:`cancel_pay|${data.split("|")[1]}|${choseApp.user_confirm}`
+        //     }
+        // ],
+        [
+                {
+                    text:`Штовхнути в “сховані”`,callback_data:`hides_app|${choseApp._id}`
+                }
+            ],
+        [{
+                    text:`Видалити`,callback_data:`delete_app|${choseApp._id}`
+                }
+        ],
+    ] 
        
-        bot.sendMessage(id,`${choseApp.name} (${choseApp.price})-hiden\n Google Play:{google.com}\n 10.09.2019`,{
+        bot.sendMessage(id,`${choseApp.name} (${choseApp.type})\n Google Play:${choseApp.google_play_url}}\n Дата відправки в модерацію:${choseApp?.moderate_date}`,{
             reply_markup:{
-                inline_keyboard:[...approvePay,nav_keyboard[1]] 
+                inline_keyboard:[...approvePay,[{
+                    text:`🢘Назад`,callback_data:`aw_confirm`
+                }]] 
             }
         })
 
     }
-    if(data.indexOf("approvePay")!=-1){
-        const bundle=data.split("|")[1];
-        if(setApproveApp({
-            bundle:bundle
-        })){
-            let arr=state.app.confirmApp.find(el=>el.bundle!=bundle);
-           state.app.confirmApp=arr;
-
-            removeAllMessage(id,bot,messageId);
-            bot.sendMessage(id,"оплата подтверждена",{//коли буде готова бот для користувачів потрібно буде надіслати їм смс про що оплата підтверджена
-                reply_markup:{
-                    inline_keyboard:[nav_keyboard[1]] 
-                }
-            })
-
-        }
-
-    }
-    if((bot_const_menu.contactUser===data.split("|")[0])&&((state.mode==="aw_confirm"))){
+    if((state.mode===bot_const_menu.awaConfirm)&&(data.split("|")[0]===bot_const_menu.hidesApp)){//скрити   
+        //hidesApp
         removeAllMessage(id,bot,messageId)
-        console.log("Aw");
-         const user=await getUser(data.split("|")[1])
-         bot.sendMessage(id,`Контакт покупателя:${user.userName}\n IdTelegram:${user.userIdTelegram}\nNikName@${user.userTelegram_nik}`,{
-             reply_markup:{
-                 inline_keyboard:nav_keyboard
-                 
-             }
-         });
-
-    }
-    if(bot_const_menu.cancelPay===data.split("|")[0]){ 
-        const bundle=data.split("|")[1];
-        const userIdtelegram=data.split("|")[2];
-        if(cancelApproveApp({
-            bundle:bundle
-        })){
-            bot.sendMessage(id,`отказано в оплате, прила возвращена в общий доступ:`,{//повідомити користувача
+        if(hideApp({app_id:data.split("|")[1]})){
+            bot.sendMessage(id,"Апку сховано!",{
                 reply_markup:{
-                    inline_keyboard:nav_keyboard
+                    inline_keyboard:[nav_keyboard[1]]
                 }
             });
- 
-        }
-
+        }else  bot.sendMessage(id,"Щось пішло не так");
     }
+    // if(data.indexOf("approvePay")!=-1){
+    //     const bundle=data.split("|")[1];
+    //     if(setApproveApp({
+    //         bundle:bundle
+    //     })){
+    //         let arr=state.app.confirmApp.find(el=>el.bundle!=bundle);
+    //        state.app.confirmApp=arr;
+
+    //         removeAllMessage(id,bot,messageId);
+    //         bot.sendMessage(id,"оплата подтверждена",{//коли буде готова бот для користувачів потрібно буде надіслати їм смс про що оплата підтверджена
+    //             reply_markup:{
+    //                 inline_keyboard:[nav_keyboard[1]] 
+    //             }
+    //         })
+
+    //     }
+
+    // }
+    // if((bot_const_menu.contactUser===data.split("|")[0])&&((state.mode==="aw_confirm"))){
+    //     removeAllMessage(id,bot,messageId)
+    //     console.log("Aw");
+    //      const user=await getUser(data.split("|")[1])
+    //      bot.sendMessage(id,`Контакт покупателя:${user.userName}\n IdTelegram:${user.userIdTelegram}\nNikName@${user.userTelegram_nik}`,{
+    //          reply_markup:{
+    //              inline_keyboard:nav_keyboard
+                 
+    //          }
+    //      });
+
+    // }
+    // if(bot_const_menu.cancelPay===data.split("|")[0]){ 
+    //     const bundle=data.split("|")[1];
+    //     const userIdtelegram=data.split("|")[2];
+    //     if(cancelApproveApp({
+    //         bundle:bundle
+    //     })){
+    //         bot.sendMessage(id,`отказано в оплате, прила возвращена в общий доступ:`,{//повідомити користувача
+    //             reply_markup:{
+    //                 inline_keyboard:nav_keyboard
+    //             }
+    //         });
+ 
+    //     }
+
+    // }
     
 })
 
@@ -704,10 +736,10 @@ bot.on("callback_query",async query=>{
     }
      
 
-    if(((state.mode===bot_const_menu.activeApp)||(state.mode===bot_const_menu.hideApp)||(state.mode===bot_const_menu.banApp)||(state.mode===bot_const_menu.penndingApp))&&(data.split("|")[0]===bot_const_menu.deleteApp)){//удалити
+    if(((state.mode===bot_const_menu.activeApp)||(state.mode===bot_const_menu.hideApp)||(state.mode===bot_const_menu.banApp)||(state.mode===bot_const_menu.penndingApp)||(state.mode===bot_const_menu.awaConfirm))&&(data.split("|")[0]===bot_const_menu.deleteApp)){//удалити
         if(deleteApp({id:data.split("|")[1]})){
             removeAllMessage(id,bot,messageId)
-            bot.sendMessage(id,"Прила удалина",{
+            bot.sendMessage(id,"Апка успішно видалена",{
                 reply_markup:{
                     inline_keyboard:[nav_keyboard[1]]
                 }
@@ -1118,39 +1150,50 @@ bot.on("callback_query",async query=>{
         const id=query.message.chat.id; 
         const data=query.data; 
         messageId=query.message.message_id; 
-    
         if(data.indexOf("pendding_app|")!=-1){
             removeAllMessage(id,bot,messageId)
           
             
             const choseApp= await state.app.penndingApp.find(el=>{return el.bundle===data.split("|")[1]});
-            const penddingApp= [[
-                {
-                    text:`Установить ссылку на картинку`,callback_data:`set_img_url|${choseApp._id}`  
-                }
-            ],  
+            const penddingApp= [
+            //     [
+            //     {
+            //         text:`Установить ссылку на картинку`,callback_data:`set_img_url|${choseApp._id}`  
+            //     }
+            // ],  
+            // [
+            //     {
+            //         text:`Изменить цену`,callback_data:`change_price|${choseApp._id}`
+            //     } 
+            // ],   
+            // [
+            //     {
+            //         text:`Изменить ссылку редиректу`,callback_data:`change_ref|${choseApp._id}`
+            //     } 
+            // ],
+            // [
+            //     {
+            //         text:`Изменить процент редиректу`,callback_data:`change_redirect_p|${choseApp._id}`
+            //     } 
+            // ],
+            // [
+            //     {
+            //         text:`Почистить url `,callback_data:`clean_url|${choseApp._id}`
+            //     } 
+            // ],
+            // [
+            //     {
+            //         text:`Установить naming`,callback_data:`set_naming|${choseApp._id}`
+            //     } 
+            // ],
             [
                 {
-                    text:`Изменить цену`,callback_data:`change_price|${choseApp._id}`
-                } 
-            ],   [
-                {
-                    text:`Изменить ссылку редиректу`,callback_data:`change_ref|${choseApp._id}`
+                    text:`${choseApp.url==""?"Переключити на заглушку":"Переключити на лінк"}`,callback_data:`switch_link|${choseApp._id}`
                 } 
             ],
             [
                 {
-                    text:`Изменить процент редиректу`,callback_data:`change_redirect_p|${choseApp._id}`
-                } 
-            ],
-            [
-                {
-                    text:`Почистить url `,callback_data:`clean_url|${choseApp._id}`
-                } 
-            ],
-            [
-                {
-                    text:`Установить naming`,callback_data:`set_naming|${choseApp._id}`
+                    text:`Відправити в модерацію`,callback_data:`send_to_moderate|${choseApp._id}`
                 } 
             ],
             [
@@ -1160,11 +1203,9 @@ bot.on("callback_query",async query=>{
             ]
         
         ] 
-        const geoArr=choseApp?.geo?.sort((a,b)=>{
-            return b.installs-a.installs
-        })
-  
-        bot.sendMessage(id,`# ${choseApp.name} (${choseApp.price}, ${choseApp.type}) - ${choseApp.status}(visibility:${choseApp.visibility_public}) \n*Ccылка:*${choseApp.url}\n*К-во уникальных пользователей - *${choseApp.installs}\n*Naming:*${choseApp.naming.lengt!=0?choseApp.naming.map(el=>"\n"+el.name+" - "+el.name_ref):"Нет неймингов"}\n*Топ Гео:*${geoArr.length!=0?geoArr.map(el=>"\n"+el.geo_it+":"+el.installs):"Нет гео"}\n*Автопуши *: Текст:${choseApp.notification_text}\nВремя старта: ${choseApp.notification_start}min.\nИнтервал: ${choseApp.notification_interval}min. \nМакс.к-во: ${choseApp.max_count}\n*Редирект*: ${choseApp.redirect_traff_url}\n*Разрешены гео:${choseApp.redirect_traff_urls}*\n*Процент редиректа:*${choseApp.redirect_traff_percent}%\n*Кэшировать последнюю зашруженную страницу*: ${choseApp.save_last_url===true?"Да":"Нет"}\n${choseApp.google_play_url}`,{
+        
+ 
+        bot.sendMessage(id,`# ${choseApp.name} , ${choseApp.type}) - ${choseApp.status}(visibility:${choseApp.visibility_public}) \n*Ccылка:*${choseApp.url===""?"Немає силки":choseApp.url}\n*К-во уникальных пользователей - *${choseApp.installs}\n*Кэшировать последнюю зашруженную страницу*: ${choseApp.save_last_url===true?"Да":"Нет"}\n${choseApp.google_play_url}`,{
             parse_mode:"Markdown",
             reply_markup:{
                 inline_keyboard:[...penddingApp,[{
@@ -1173,7 +1214,105 @@ bot.on("callback_query",async query=>{
             }
         }) 
         }
-        
+
+        //відправити в модерацію
+
+        if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.sendToModerate)){
+            const appID=data.split("|")[1];
+            const choseApp=state.app.penndingApp.find(el=>{return el._id===appID}); 
+
+            await setModerate({app_id:appID})
+            removeAllMessage(id,bot,messageId)
+            state.app.penndingApp.filter(el=>el._id!=appID)
+            choseApp.status="moderating"
+            state.app.moderateApp.push(choseApp)
+            await setURL({url:"",id:appID})
+            bot.sendMessage(id,"Прілу відправлено в модерацію",{
+                reply_markup:{
+                    inline_keyboard:[[{
+                        text:`🢘Назад`,callback_data:`pendding_app`
+                    }],nav_keyboard[1]] 
+                }
+            })
+
+
+
+           
+        }
+
+
+
+
+        //змінити лінк
+        if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.switchLink)){
+            const appID=data.split("|")[1];
+           
+            const choseApp=state.app.penndingApp.find(el=>{return el._id===appID}); 
+            const penddingApp= [
+                
+                [
+                    {
+                        text:`${choseApp.url==""?"Переключити на заглушку":"Переключити на лінк"}`,callback_data:`switch_link|${choseApp._id}`
+                    } 
+                ],
+                [
+                    {
+                        text:`Відправити в модерацію`,callback_data:`send_to_moderate|${choseApp._id}`
+                    } 
+                ],
+                [
+                    {
+                        text:`Удалить прилу.`,callback_data:`delete_app|${choseApp._id}`
+                    } 
+                ]
+            
+            ] 
+            const {chat,message_id,text}=query.message
+            if(choseApp.url==""){
+                await setURL({url:"https://www.google.com.ua/",id:appID})
+                state.app.penndingApp.forEach(e=>{if(e._id==choseApp._id){
+                    e.url="https://www.google.com.ua/"
+                }})
+                bot.answerCallbackQuery({
+                    callback_query_id:query.id,
+                    text:"Заглушка встановлена"
+                })
+                // removeAllMessage(id,bot,messageId)
+               
+                
+                bot.editMessageText(`# ${choseApp.name} , ${choseApp.type}) - ${choseApp.status}(visibility:${choseApp.visibility_public}) \n*Ccылка:*${choseApp.url===""?"Немає силки":choseApp.url}\n*К-во уникальных пользователей - *${choseApp.installs}\n*Кэшировать последнюю зашруженную страницу*: ${choseApp.save_last_url===true?"Да":"Нет"}\n${choseApp.google_play_url}`,{
+                    chat_id:chat.id,
+                    message_id:message_id,
+                    parse_mode:"Markdown",
+            reply_markup:{
+                inline_keyboard:[...penddingApp,[{
+                    text:`🢘Назад`,callback_data:`pendding_app`
+                }],nav_keyboard[1]] 
+            }
+                })
+            }else{
+                await  setURL({url:"",id:appID})
+                bot.answerCallbackQuery({
+                    callback_query_id:query.id,
+                    text:"Лінк встановлено"
+                })
+                state.app.penndingApp.forEach(e=>{if(e._id==choseApp._id){
+                    e.url=""
+                }})
+                bot.editMessageText(`# ${choseApp.name} , ${choseApp.type}) - ${choseApp.status}(visibility:${choseApp.visibility_public}) \n*Ccылка:*${choseApp.url===""?"Немає силки":choseApp.url}\n*К-во уникальных пользователей - *${choseApp.installs}\n*Кэшировать последнюю зашруженную страницу*: ${choseApp.save_last_url===true?"Да":"Нет"}\n${choseApp.google_play_url}`,{
+                    chat_id:chat.id,
+                    message_id:message_id,
+                    parse_mode:"Markdown",
+                    reply_markup:{
+                        inline_keyboard:[...penddingApp,[{
+                            text:`🢘Назад`,callback_data:`pendding_app`
+                        }],nav_keyboard[1]] 
+                    }
+                })
+            }
+
+
+        }
 
         //очистити url
         if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.cleanUrl)){

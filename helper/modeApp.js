@@ -28,7 +28,9 @@ module.exports={
     hidedApps:"hided_apps",
     makeActive:"make_active",
     cleanUrl:"clean_url",
-    setNaming:"set_naming"
+    setNaming:"set_naming",
+    switchLink:"switch_link",
+    sendToModerate:"send_to_moderate"
 
 
 }
