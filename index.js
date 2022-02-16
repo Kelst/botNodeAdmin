@@ -1,13 +1,14 @@
 //підключення бота
 const TOKKEN="5187338885:AAFvQmAg38G0fpLAvcYPrneZbWY-tkHtXU0";
 const TelegramApi=require("node-telegram-bot-api");
-const bot= new TelegramApi(TOKKEN,{polling:true});
-const express = require('express')
-const app = express()
-const port = 3002
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-  })
+
+const port = process.env.PORT || 443
+host = '0.0.0.0'
+externalUrl = process.env.CUSTOM_ENV_VARIABLE || 'https://my-app.herokuapp.com'
+
+const bot = new TelegramBot(process.env.TOKEN, { webHook: { port : port, host : host } });
+bot.setWebHook(externalUrl + ':443/bot' + TOKKEN);
+
 //масив для id повідомлень(потрібен для очистки)
 let messageId=0;
 const removeAllMessage=require("./helper/removeMessage")//приймає обєкт бот та масив ід повідомлень(bot,messageId)
@@ -139,7 +140,7 @@ setInterval(() => {
    
     nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:await home_keyboard(state)},{message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
     
-    removeAllMessage(bot,messageId)
+    removeAllMessage(id,bot,messageId)
     bot.sendMessage(id,`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,{
         reply_markup:{inline_keyboard:home_keyboard(state)}
     })
@@ -155,7 +156,7 @@ bot.on("callback_query",async query=>{
 
      //додати прілку
         case bot_const_menu.addApp: 
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
 
         state.mode=bot_const_menu.addApp
@@ -170,7 +171,7 @@ bot.on("callback_query",async query=>{
       
         //підьвердити прілку
         case bot_const_menu.awaConfirm:
-            removeAllMessage(bot,messageId);
+            removeAllMessage(id,bot,messageId);
             nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
 
             state.mode=bot_const_menu.awaConfirm;
@@ -210,7 +211,7 @@ bot.on("callback_query",async query=>{
 
 //активні пріли початок
         case bot_const_menu.activeApp:
-            removeAllMessage(bot,messageId);
+            removeAllMessage(id,bot,messageId);
             nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.activeApp;
             state.app.activeApp=await getActiveApp();
@@ -244,7 +245,7 @@ bot.on("callback_query",async query=>{
 
 //початок обробки пріл використовуються
         case bot_const_menu.inUse: 
-        removeAllMessage(bot,messageId);
+        removeAllMessage(id,bot,messageId);
         nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
         state.mode=bot_const_menu.inUse;
         state.app.inuseApp=await getAppsInUse();
@@ -280,7 +281,7 @@ bot.on("callback_query",async query=>{
             //скриті прілки
             //getHideApp
           
-            removeAllMessage(bot,messageId);
+            removeAllMessage(id,bot,messageId);
             nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.hideApp;
             state.app.hideApp=await getHideApp();
@@ -312,7 +313,7 @@ bot.on("callback_query",async query=>{
 
         case bot_const_menu.banApp:
             
-            removeAllMessage(bot,messageId);
+            removeAllMessage(id,bot,messageId);
             nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.banApp;
             state.app.banApp=await getBanApp();
@@ -347,7 +348,7 @@ bot.on("callback_query",async query=>{
         //пріли в розробці
         case bot_const_menu.penndingApp:
             
-            removeAllMessage(bot,messageId);
+            removeAllMessage(id,bot,messageId);
             nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.penndingApp;
             state.app.penndingApp=await getPenndingApp();
@@ -381,7 +382,7 @@ bot.on("callback_query",async query=>{
         //пройшли перевірку google play
         case bot_const_menu.chekGooglePlay:
             
-            removeAllMessage(bot,messageId);
+            removeAllMessage(id,bot,messageId);
             nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.chekGooglePlay;
             
@@ -412,7 +413,7 @@ bot.on("callback_query",async query=>{
         
         break;
         case bot_const_menu.home: 
-            removeAllMessage(bot,messageId);
+            removeAllMessage(id,bot,messageId);
             state.mode="";
             const homeState={...nav[0]}
             nav.splice(1,nav.length)
@@ -425,7 +426,7 @@ bot.on("callback_query",async query=>{
             
         break;
         case bot_const_menu.back: 
-        removeAllMessage(bot,messageId);
+        removeAllMessage(id,bot,messageId);
         const lastState=nav.pop(); 
       //  state.mode=""; 
         bot.sendMessage(id,lastState?.message,{
@@ -490,7 +491,7 @@ bot.on("callback_query",async query=>{
     messageId=query.message.message_id;
 
     if(data.indexOf("aw_confirm|")!=-1){
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
     
         nav.push({message:"Ожидают подтверждения",keyboard:[...state.keyboard_confirm_app,...nav_keyboard]});
         const choseApp=state.app.confirmApp.find(el=>{return el.bundle===data.split("|")[1]});
@@ -523,7 +524,7 @@ bot.on("callback_query",async query=>{
             let arr=state.app.confirmApp.find(el=>el.bundle!=bundle);
            state.app.confirmApp=arr;
 
-            removeAllMessage(bot,messageId);
+            removeAllMessage(id,bot,messageId);
             bot.sendMessage(id,"оплата подтверждена",{//коли буде готова бот для користувачів потрібно буде надіслати їм смс про що оплата підтверджена
                 reply_markup:{
                     inline_keyboard:[nav_keyboard[1]] 
@@ -534,7 +535,7 @@ bot.on("callback_query",async query=>{
 
     }
     if((bot_const_menu.contactUser===data.split("|")[0])&&((state.mode==="aw_confirm"))){
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         console.log("Aw");
          const user=await getUser(data.split("|")[1])
          bot.sendMessage(id,`Контакт покупателя:${user.userName}\n IdTelegram:${user.userIdTelegram}\nNikName@${user.userTelegram_nik}`,{
@@ -572,7 +573,7 @@ bot.on("callback_query",async query=>{
         const data=query.data; 
         messageId=query.message.message_id;
     if(data.indexOf("act_app|")!=-1){
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         nav.push({message:"Активные прилы",keyboard:[...state.keyboard_active_app,...nav_keyboard]});
         const choseApp=state.app.activeApp.find(el=>{return el.bundle===data.split("|")[1]});
         const activeApp= [[
@@ -611,7 +612,7 @@ bot.on("callback_query",async query=>{
     }
     if((state.mode===bot_const_menu.activeApp)&&(data.split("|")[0]===bot_const_menu.hidesApp)){//скрити   
         //hidesApp
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         if(hideApp({app_id:data.split("|")[1]})){
             bot.sendMessage(id,"Прилу Cкрыто",{
                 reply_markup:{
@@ -623,7 +624,7 @@ bot.on("callback_query",async query=>{
 
     if((state.mode===bot_const_menu.activeApp)&&(data.split("|")[0]===bot_const_menu.shareApp)){//розшарити
         //shareAppToUsers
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
 
          if(shareAppToUser({app_id:data.split("|")[1]})){
             bot.sendMessage(id,"Прилу розшарино",{
@@ -637,7 +638,7 @@ bot.on("callback_query",async query=>{
         //shareAppToUsers
     
           //shareAppToUsers
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         const idApp=data.split("|")[1]
         const choseApp=state.app.activeApp.find(el=>el._id==idApp)
         state.control.mode="share_app_to_user";
@@ -654,7 +655,7 @@ bot.on("callback_query",async query=>{
     }
     if(((state.mode==bot_const_menu.activeApp)||(state.mode==bot_const_menu.hideApp))&&(data.split("|")[0]==bot_const_menu.shareYes)){
         //   text:`Да`,callback_data:`share_yes|${user.userIdTelegram}|${choseApp.bundle}`
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         const usetId=data.split("|")[1];
         const bundleApp=data.split("|")[2];
         try{
@@ -663,6 +664,8 @@ bot.on("callback_query",async query=>{
             confirmId:usetId
         })
         if(await setApproveApp({bundle:bundleApp})){
+            state.control.mode="";
+            state.control.idApp="";
             bot.sendMessage(id,"Прилу передано пользователю!",{
                 reply_markup:{
                     inline_keyboard:[nav_keyboard[1]] 
@@ -685,7 +688,7 @@ bot.on("callback_query",async query=>{
 
     if(((state.mode===bot_const_menu.activeApp)||(state.mode===bot_const_menu.hideApp)||(state.mode===bot_const_menu.banApp))&&(data.split("|")[0]===bot_const_menu.deleteApp)){//удалити
         if(deleteApp({id:data.split("|")[1]})){
-            removeAllMessage(bot,messageId)
+            removeAllMessage(id,bot,messageId)
             bot.sendMessage(id,"Прила удалина",{
                 reply_markup:{
                     inline_keyboard:[nav_keyboard[1]]
@@ -707,7 +710,7 @@ bot.on("callback_query",async query=>{
         messageId=query.message.message_id;
     
         if(data.indexOf("in_use|")!=-1){
-            removeAllMessage(bot,messageId)
+            removeAllMessage(id,bot,messageId)
             nav.push({message:"Прилы которые используются",keyboard:[...state.keyboard_inUse_app,...nav_keyboard]});
             const choseApp= await state.app.inuseApp.find(el=>{return el.bundle===data.split("|")[1]});
             const inUseApp= [[
@@ -744,7 +747,7 @@ bot.on("callback_query",async query=>{
         //змінити силку редіректу
         if((state.mode===bot_const_menu.inUse)&&(data.split("|")[0]===bot_const_menu.changeReff)){
             const appID=data.split("|")[1];
-            removeAllMessage(bot,messageId)
+            removeAllMessage(id,bot,messageId)
             const choseApp=state.app.inuseApp.find(el=>{return el._id===appID});
 
             state.control.mode=bot_const_menu.changeReff
@@ -767,7 +770,7 @@ bot.on("callback_query",async query=>{
              //змінити процент редіректу
              if((state.mode===bot_const_menu.inUse)&&(data.split("|")[0]===bot_const_menu.changeRedirectP)){
                 const appID=data.split("|")[1];
-                removeAllMessage(bot,messageId)
+                removeAllMessage(id,bot,messageId)
                 const choseApp=state.app.inuseApp.find(el=>{return el._id===appID});
               
                
@@ -786,7 +789,7 @@ bot.on("callback_query",async query=>{
              //змінити  гео
     if((state.mode===bot_const_menu.inUse)&&(data.split("|")[0]===bot_const_menu.changeGeoApp)){
         const appID=data.split("|")[1];
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         const choseApp=state.app.inuseApp.find(el=>{return el._id===appID});
        
        
@@ -804,7 +807,7 @@ bot.on("callback_query",async query=>{
 //контакт user.
     if((state.mode===bot_const_menu.inUse)&&(data.split("|")[0]===bot_const_menu.contactUser)){
         const appID=data.split("|")[1];
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         const choseApp=state.app.inuseApp.find(el=>{return el._id===appID});
        
        
@@ -816,8 +819,12 @@ bot.on("callback_query",async query=>{
                 inline_keyboard:[[{
                     text:`🢘Назад`,callback_data:`in_use|${choseApp.bundle}` 
                 }],nav_keyboard[1]]
+
             }  
+            
         })
+        state.control.mode="";
+            state.control.idApp="";
     }
     });
     
@@ -835,8 +842,11 @@ bot.on("callback_query",async query=>{
                             e.redirect_traff_url=text
                         }
                     })
+                    state.control.mode="";
+            state.control.idApp="";
                     bot.sendMessage(id,"Ссылка изменилась")
-                }else  bot.sendMessage(id,"Штото пошло не так")
+                }else  {state.control.mode="";
+                state.control.idApp="";bot.sendMessage(id,"Штото пошло не так")}
 
                }
                //.........................
@@ -852,8 +862,13 @@ bot.on("callback_query",async query=>{
                             e.redirect_traff_percent=text;
                         }
                     })
+                    state.control.mode="";
+            state.control.idApp="";
+            state.control.mode="";
+            state.control.idApp="";
                     bot.sendMessage(id,"Процент редиректу измененный ")
-                }else  bot.sendMessage(id,"Штото пошло не так")
+                }else  {state.control.mode="";
+                state.control.idApp="";bot.sendMessage(id,"Штото пошло не так")}
 
                }
                //.................................
@@ -870,8 +885,11 @@ bot.on("callback_query",async query=>{
                             e.redirect_traff_urls=text.split(" ");
                         }
                     })
+                    state.control.mode="";
+            state.control.idApp="";
                     bot.sendMessage(id,"Новый GEO установлен ")
-                }else  bot.sendMessage(id,"Штото пошло не так")
+                }else {state.control.mode="";
+                state.control.idApp=""; bot.sendMessage(id,"Штото пошло не так")}
 
                }
 
@@ -931,7 +949,7 @@ bot.on("callback_query",async query=>{
         const data=query.data; 
         messageId=query.message.message_id;
     if(data.indexOf("hide_app|")!=-1){
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         // nav.push({message:"Cкрытые прилы",keyboard:[...state.keyboard_active_app,...nav_keyboard]});
         const choseApp=state.app.hideApp.find(el=>{return el.bundle===data.split("|")[1]});
         const activeApp= [[
@@ -966,7 +984,7 @@ bot.on("callback_query",async query=>{
     }
     if((state.mode===bot_const_menu.hideApp)&&(data.split("|")[0]==="show_app")){//скрити   
         //showApp
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         if(showApp({app_id:data.split("|")[1]})){
             bot.sendMessage(id,"Прилу сделано видимой",{
                 reply_markup:{
@@ -980,7 +998,7 @@ bot.on("callback_query",async query=>{
     if((state.mode===bot_const_menu.hideApp)&&(data.split("|")[0]===bot_const_menu.shareAppToUser)){//розшарити
         //shareAppToUsers
           //shareAppToUsers
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
         const idApp=data.split("|")[1]
         const choseApp=state.app.hideApp.find(el=>el._id==idApp)
         state.control.mode="share_app_to_user";
@@ -1022,7 +1040,7 @@ bot.on("callback_query",async query=>{
         messageId=query.message.message_id; 
     
         if(data.indexOf("ban_app|")!=-1){
-            removeAllMessage(bot,messageId)
+            removeAllMessage(id,bot,messageId)
           
             
             const choseApp= await state.app.banApp.find(el=>{return el.bundle===data.split("|")[1]});
@@ -1054,7 +1072,7 @@ bot.on("callback_query",async query=>{
         if((state.mode===bot_const_menu.banApp)&&(data.split("|")[0]===bot_const_menu.contactUser)){
             
             const appID=data.split("|")[1];
-            removeAllMessage(bot,messageId)
+            removeAllMessage(id,bot,messageId)
             const choseApp=state.app.banApp.find(el=>{return el._id===appID});
            
            
@@ -1084,7 +1102,7 @@ bot.on("callback_query",async query=>{
         messageId=query.message.message_id; 
     
         if(data.indexOf("pendding_app|")!=-1){
-            removeAllMessage(bot,messageId)
+            removeAllMessage(id,bot,messageId)
           
             
             const choseApp= await state.app.penndingApp.find(el=>{return el.bundle===data.split("|")[1]});
@@ -1137,7 +1155,7 @@ bot.on("callback_query",async query=>{
         //очистити url
         if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.cleanUrl)){
             const appID=data.split("|")[1];
-            removeAllMessage(bot,messageId)
+            removeAllMessage(id,bot,messageId)
             const choseApp=state.app.penndingApp.find(el=>{return el._id===appID});
         
           if(setURL({url:"",id:appID})){
@@ -1171,7 +1189,7 @@ bot.on("callback_query",async query=>{
 
 if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.changeReff)){
     const appID=data.split("|")[1];
-    removeAllMessage(bot,messageId)
+    removeAllMessage(id,bot,messageId)
     const choseApp=state.app.penndingApp.find(el=>{return el._id===appID});
 
     
@@ -1188,7 +1206,7 @@ if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_me
 
 if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.setImageUrl)){
     const appID=data.split("|")[1];
-    removeAllMessage(bot,messageId)
+    removeAllMessage(id,bot,messageId)
     const choseApp=state.app.penndingApp.find(el=>{return el._id===appID});
 
     state.control.mode=bot_const_menu.changeReff
@@ -1208,7 +1226,7 @@ if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_me
 
 if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.changePrice)){
     const appID=data.split("|")[1];
-    removeAllMessage(bot,messageId)
+    removeAllMessage(id,bot,messageId)
     const choseApp=state.app.penndingApp.find(el=>{return el._id===appID});
 
     state.control.mode=bot_const_menu.changeReff
@@ -1227,7 +1245,7 @@ if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_me
  //змінити процент редіректу зутвштп
  if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.changeRedirectP)){
     const appID=data.split("|")[1];
-    removeAllMessage(bot,messageId)
+    removeAllMessage(id,bot,messageId)
     const choseApp=state.app.penndingApp.find(el=>{return el._id===appID});
   
    
@@ -1245,7 +1263,7 @@ if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_me
 
 if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_menu.setNaming)){
     const appID=data.split("|")[1];
-    removeAllMessage(bot,messageId)
+    removeAllMessage(id,bot,messageId)
     const choseApp=state.app.penndingApp.find(el=>{return el._id===appID});
   
    
@@ -1284,8 +1302,11 @@ if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_me
                      e.redirect_traff_url=text
                  }
              })
+             state.control.mode="";
+            state.control.idApp="";
              bot.sendMessage(id,"Ссылка изменилась")
-         }else  bot.sendMessage(id,"Штото пошло не так")
+         }else {state.control.mode="";
+         state.control.idApp=""; bot.sendMessage(id,"Штото пошло не так")}
 
         }
     //setImageUrl
@@ -1301,8 +1322,11 @@ if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_me
                      e.image_link=text
                  }
              })
+             state.control.mode="";
+            state.control.idApp="";
              bot.sendMessage(id,"Image Url изменилась")
-         }else  bot.sendMessage(id,"Штото пошло не так")
+         }else {state.control.mode="";
+         state.control.idApp=""; bot.sendMessage(id,"Штото пошло не так")}
 
         }
 
@@ -1319,8 +1343,13 @@ if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_me
                         e.price=text
                     }
                 }) 
+                state.control.mode="";
+            state.control.idApp="";
                 bot.sendMessage(id,"Вы установили новую цену ")
-            }else  bot.sendMessage(id,"Штото пошло не так")
+            }else {
+                    state.control.mode="";
+                    state.control.idApp="";
+                    bot.sendMessage(id,"Штото пошло не так")}
    
            }
     
@@ -1337,8 +1366,11 @@ if((state.mode===bot_const_menu.penndingApp)&&(data.split("|")[0]===bot_const_me
                         e.redirect_traff_percent=text;
                     }
                 })
+                state.control.mode="";
+            state.control.idApp="";
                 bot.sendMessage(id,"Процент редиректу измененный ")
-            }else  bot.sendMessage(id,"Штото пошло не так")
+            }else  {state.control.mode="";
+            state.control.idApp="";bot.sendMessage(id,"Штото пошло не так")}
 
            }
 
@@ -1357,8 +1389,11 @@ if((state.mode===bot_const_menu.penndingApp)&&(state.control.mode==bot_const_men
                 })
             }
         })
+        state.control.mode="";
+            state.control.idApp="";
         bot.sendMessage(id,"Нейминг добавлен ")
-    }else  bot.sendMessage(id,"Штото пошло не так")
+    }else {state.control.mode="";
+    state.control.idApp=""; bot.sendMessage(id,"Штото пошло не так")}
 
    }
 
@@ -1380,7 +1415,7 @@ bot.on("callback_query",async query=>{
     messageId=query.message.message_id; 
 
     if(data.indexOf("chekGooglePlay|")!=-1){
-        removeAllMessage(bot,messageId)
+        removeAllMessage(id,bot,messageId)
       
         
         const choseApp= await state.app.chekGoogle.find(el=>{return el.bundle===data.split("|")[1]});

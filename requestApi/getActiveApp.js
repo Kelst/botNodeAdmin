@@ -4,7 +4,7 @@ module.exports= async function  (){
 
    await fetch('https://gamblingappapi.herokuapp.com/admin/api/trds3f2333/getActiveApp/')
       .then(res => res.json()) 
-      .then(json =>res=json);
+      .then(json =>res=json).catch(er=>console.log(er))
      
    return res;
 } 

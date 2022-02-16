@@ -9,6 +9,6 @@ module.exports= async function  (date){
         body: JSON.stringify(date),
         headers: { 'Content-Type': 'application/json' }
     }).then(res => res.json())
-      .then(json => flag=true);
+      .then(json => flag=true).catch(er=>console.log(er))
       return flag
 } 

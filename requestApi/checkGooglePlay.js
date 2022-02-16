@@ -9,7 +9,7 @@ module.exports= async function  (pendingAp,googleApp){
         if(googleApp.filter(i=>i._id==element._id).length===0){
             googleApp.push(element)
         }
-    }, console.log);
+    }, console.log).catch(er=>console.log(er))
     });
 
 

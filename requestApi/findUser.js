@@ -8,7 +8,7 @@ console.log(date);
         headers: { 'Content-Type': 'application/json' }
     }).then(res => res.json())
       .then(json => flag=json)
-      .catch(e=>console.log(e))
+      .catch(e=>console.log(e)).catch(er=>console.log(er))
       return flag
 
 } 
