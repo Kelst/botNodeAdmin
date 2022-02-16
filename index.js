@@ -1,13 +1,9 @@
 //підключення бота
 const TOKKEN="5187338885:AAFvQmAg38G0fpLAvcYPrneZbWY-tkHtXU0";
 const TelegramApi=require("node-telegram-bot-api");
-
-const port = process.env.PORT || 443
-host = '0.0.0.0'
-externalUrl = process.env.CUSTOM_ENV_VARIABLE || 'https://botadminapi.herokuapp.com'
-
-const bot = new TelegramApi(process.env.TOKEN, { webHook: { port : port, host : host } });
-bot.setWebHook(externalUrl + ':443/bot' + TOKKEN);
+let bot
+require('dotenv').config();
+const token = process.env.TELEGRAM_TOKEN;
 
 //масив для id повідомлень(потрібен для очистки)
 let messageId=0;
@@ -15,7 +11,13 @@ const removeAllMessage=require("./helper/removeMessage")//приймає обє�
 
 //бібліотека для https запитів
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
+if (process.env.NODE_ENV === 'production') {
+    bot = new TelegramApi(TOKKEN);
+    bot.setWebHook(process.env.HEROKU_URL + bot.token);
+ } else {
+    bot = new TelegramApi(TOKKEN, { polling: true });
+ }
+  
 
 //масив для навігації.
 const nav=[]//елементами масиву будуть обєкти з полями останнє повідомлення та останнє клавіатура;
@@ -118,7 +120,9 @@ bot.on("message",msg=>{
 })
 //запуск бота 
 bot.onText(/\/start/, async msg=>{
-   
+   state.control.mode="";
+   state.control.idApp=""
+   state.mode=""
     const {id}=msg.chat;
      messageId=msg.message_id;
      const stateApp=await getStateApp();
@@ -138,10 +142,10 @@ setInterval(() => {
     state.user.first_name=msg.from.first_name;
     state.user.last_name=msg.from.last_name;
    
-    nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:await home_keyboard(state)},{message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+    nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:await home_keyboard(state)},{message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
     
     removeAllMessage(id,bot,messageId)
-    bot.sendMessage(id,`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,{
+    bot.sendMessage(id,`Здоров був друже\nКонтроль всіх апок тут`,{
         reply_markup:{inline_keyboard:home_keyboard(state)}
     })
     })
@@ -157,7 +161,7 @@ bot.on("callback_query",async query=>{
      //додати прілку
         case bot_const_menu.addApp: 
         removeAllMessage(id,bot,messageId)
-        nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+        nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
 
         state.mode=bot_const_menu.addApp
         bot.sendMessage(id,"Введите информацию о приложении в формате:\nBit Vegas*\n400*\ngambling*\nbundle*",{
@@ -172,7 +176,7 @@ bot.on("callback_query",async query=>{
         //підьвердити прілку
         case bot_const_menu.awaConfirm:
             removeAllMessage(id,bot,messageId);
-            nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+            nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
 
             state.mode=bot_const_menu.awaConfirm;
           
@@ -212,7 +216,7 @@ bot.on("callback_query",async query=>{
 //активні пріли початок
         case bot_const_menu.activeApp:
             removeAllMessage(id,bot,messageId);
-            nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+            nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.activeApp;
             state.app.activeApp=await getActiveApp();
             if(state.app.activeApp.length>0){
@@ -246,7 +250,7 @@ bot.on("callback_query",async query=>{
 //початок обробки пріл використовуються
         case bot_const_menu.inUse: 
         removeAllMessage(id,bot,messageId);
-        nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+        nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
         state.mode=bot_const_menu.inUse;
         state.app.inuseApp=await getAppsInUse();
 
@@ -282,7 +286,7 @@ bot.on("callback_query",async query=>{
             //getHideApp
           
             removeAllMessage(id,bot,messageId);
-            nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+            nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.hideApp;
             state.app.hideApp=await getHideApp();
             if(state.app.hideApp.lengt!=0){
@@ -314,7 +318,7 @@ bot.on("callback_query",async query=>{
         case bot_const_menu.banApp:
             
             removeAllMessage(id,bot,messageId);
-            nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+            nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.banApp;
             state.app.banApp=await getBanApp();
             console.log("Ban App");
@@ -349,7 +353,7 @@ bot.on("callback_query",async query=>{
         case bot_const_menu.penndingApp:
             
             removeAllMessage(id,bot,messageId);
-            nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+            nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.penndingApp;
             state.app.penndingApp=await getPenndingApp();
             
@@ -383,7 +387,7 @@ bot.on("callback_query",async query=>{
         case bot_const_menu.chekGooglePlay:
             
             removeAllMessage(id,bot,messageId);
-            nav.push({message:`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,keyboard:home_keyboard(state)})
+            nav.push({message:`Здоров був друже \nКонтроль всіх апок тут`,keyboard:home_keyboard(state)})
             state.mode=bot_const_menu.chekGooglePlay;
             
               if(state.app.chekGoogle.length!=0){
@@ -418,7 +422,7 @@ bot.on("callback_query",async query=>{
             const homeState={...nav[0]}
             nav.splice(1,nav.length)
             
-            bot.sendMessage(id,`Привет, Робин Гуд.\n${state.user.first_name} \n ${state.user.last_name}\n\nВсе прилы Шервудского леса под твоим контролем.`,{
+            bot.sendMessage(id,`Здоров був друже \nКонтроль всіх апок тут`,{
                 reply_markup:{
                     inline_keyboard:home_keyboard(state) 
                 }
@@ -447,7 +451,7 @@ bot.on("callback_query",async query=>{
     
         const {id}=msg.chat; 
         
-        if(state.mode===bot_const_menu.addApp){
+        if((state.mode===bot_const_menu.addApp)&&(msg.text.split("/")[0]=!"start")){
            const text=msg.text.split("*");
            const app={ 
             name:text[0]||"empty name",
@@ -456,7 +460,7 @@ bot.on("callback_query",async query=>{
             bundle:text[3]||"test.bundle",
             url:"",
             redirect_traff_url:"",
-            redirect_traff_percent:3
+            redirect_traff_percent:3 
 
 
         }
@@ -686,7 +690,7 @@ bot.on("callback_query",async query=>{
     }
      
 
-    if(((state.mode===bot_const_menu.activeApp)||(state.mode===bot_const_menu.hideApp)||(state.mode===bot_const_menu.banApp))&&(data.split("|")[0]===bot_const_menu.deleteApp)){//удалити
+    if(((state.mode===bot_const_menu.activeApp)||(state.mode===bot_const_menu.hideApp)||(state.mode===bot_const_menu.banApp)||(state.mode===bot_const_menu.penndingApp))&&(data.split("|")[0]===bot_const_menu.deleteApp)){//удалити
         if(deleteApp({id:data.split("|")[1]})){
             removeAllMessage(id,bot,messageId)
             bot.sendMessage(id,"Прила удалина",{
@@ -1133,6 +1137,11 @@ bot.on("callback_query",async query=>{
             [
                 {
                     text:`Установить naming`,callback_data:`set_naming|${choseApp._id}`
+                } 
+            ],
+            [
+                {
+                    text:`Удалить прилу.`,callback_data:`delete_app|${choseApp._id}`
                 } 
             ]
         
