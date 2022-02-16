@@ -8,15 +8,29 @@ const token = process.env.TELEGRAM_TOKEN;
 //масив для id повідомлень(потрібен для очистки)
 let messageId=0;
 const removeAllMessage=require("./helper/removeMessage")//приймає обєкт бот та масив ід повідомлень(bot,messageId)
-
-//бібліотека для https запитів
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 if (process.env.NODE_ENV === 'production') {
     bot = new TelegramApi(TOKKEN);
     bot.setWebHook(process.env.HEROKU_URL + bot.token);
  } else {
     bot = new TelegramApi(TOKKEN, { polling: true });
  }
+//бібліотека для https запитів
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+const express = require('express')
+const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.listen(process.env.PORT);
+
+app.post('/' + bot.token, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
   
 
 //масив для навігації.
