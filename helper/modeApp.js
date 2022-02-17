@@ -30,7 +30,11 @@ module.exports={
     cleanUrl:"clean_url",
     setNaming:"set_naming",
     switchLink:"switch_link",
-    sendToModerate:"send_to_moderate"
+    sendToModerate:"send_to_moderate",
+    sendToBan:"send_to_ban",
+    setPriceAndBaner:"set_price_and_baner",
+    changeDateRedirect:"change_date_redirect",
+    deleteRedirect:"delete_redirect"
 
 
 }

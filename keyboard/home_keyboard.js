@@ -39,7 +39,7 @@ module.exports=function({app}){
        
     [
         {
-            text:`Заблоковані ${app.banApp.length==0?"":app.banApp.length}`,callback_data:"ban_app"
+            text:`Заблоковані ${app.banApp.length==0?"":"("+app.banApp.length+")"}`,callback_data:"ban_app"
         }
     ],
        
