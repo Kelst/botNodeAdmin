@@ -1,11 +1,7 @@
-module.exports=[
-  
-   
-   [
-    {
-        text:`Отклонить`,callback_data:"cancel_pay"
-    }
-],
-
-   
+module.exports = [
+    [
+        {
+            text: `Отклонить`, callback_data: "cancel_pay"
+        }
+    ],
 ]
