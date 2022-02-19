@@ -1,8 +1,8 @@
 // /admin/api/trds3f2333/setRedirectUrl/
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-module.exports= async function  (date){
-    let flag=false;
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+module.exports = async function (date) {
+  let flag = false;
 
    await fetch('https://guruapigamb.site/admin/api/trds3f2333/setRedirectUrl/', {
         method: 'PUT',

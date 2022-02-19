@@ -1,14 +1,14 @@
 
-module.exports=function({app}){
+module.exports = function ({ app }) {
     return [
         [
             {
-                text:`Додати апку`,callback_data:"add_app"
+                text: `Додати апку`, callback_data: "add_app"
             }
         ],
         [
             {
-                text:`В розробці ${app.penndingApp.length==0?"":"("+app.penndingApp.length+")"}`,callback_data:"pendding_app"
+                text: `В розробці ${app.penndingApp.length == 0 ? "" : "(" + app.penndingApp.length + ")"}`, callback_data: "pendding_app"
             }
         ],
         [ 

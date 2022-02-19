@@ -1,6 +1,6 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-module.exports= async function  (id){
-    let flag=false;
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+module.exports = async function (id) {
+  let flag = false;
 
    await fetch('https://guruapigamb.site/admin/api/trds3f2333/moderateApp/', {
         method: 'PUT',

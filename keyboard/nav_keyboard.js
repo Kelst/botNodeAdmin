@@ -1,15 +1,15 @@
-module.exports=[
+module.exports = [
     [
         {
-            text:`🢘Назад`,callback_data:"return_back"
+            text: `🢘Назад`, callback_data: "return_back"
         }
     ],
     [
-       {
-           text:`🏠Главная`,callback_data:"return_home"
-       }
-   ],
-  
+        {
+            text: `🏠Главная`, callback_data: "return_home"
+        }
+    ],
 
-   
+
+
 ]

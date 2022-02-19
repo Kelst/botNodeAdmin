@@ -1,5 +1,5 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-module.exports= async function  (userId){
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+module.exports = async function (userId) {
     let res;
 
    await fetch(`https://guruapigamb.site/admin/user/api/trds3f2333/getUser/${userId}`)
@@ -10,5 +10,9 @@ module.exports= async function  (userId){
           return res
       }else false; 
 
-} 
+    if (res) {
+        return res
+    } else false;
+
+}
 

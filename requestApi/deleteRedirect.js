@@ -1,7 +1,7 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-module.exports= async function  (date){
-    let flag=false;
-    console.log(date);
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+module.exports = async function (date) {
+  let flag = false;
+  console.log(date);
 
    await fetch('https://guruapigamb.site/admin/api/trds3f2333/deleteRedirect/', {
         method: 'PUT',

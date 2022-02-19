@@ -1,6 +1,6 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-module.exports= async function  (app){
-    let flag=false;
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+module.exports = async function (app) {
+  let flag = false;
 
    await fetch('https://guruapigamb.site/admin/api/trds3f2333/addApp/', {
         method: 'POST',
@@ -10,5 +10,5 @@ module.exports= async function  (app){
       .then(json => flag=true).catch(er=>console.log(er))
       return flag
 
-} 
+}
 

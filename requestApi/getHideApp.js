@@ -1,5 +1,5 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-module.exports= async function  (app){
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+module.exports = async function (app) {
     let res;
 
    await fetch('https://guruapigamb.site/admin/api/trds3f2333/getAppHide/')
@@ -10,5 +10,9 @@ module.exports= async function  (app){
           return res
       }else false; 
 
-} 
+    if (res) {
+        return res
+    } else false;
+
+}
 
