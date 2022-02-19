@@ -2,7 +2,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 module.exports= async function  (app){
     let flag=false;
 
-   await fetch('https://gamblingappapi.herokuapp.com/admin/api/trds3f2333/addApp/', {
+   await fetch('https://guruapigamb.site/admin/api/trds3f2333/addApp/', {
         method: 'POST',
         body: JSON.stringify(app),
         headers: { 'Content-Type': 'application/json' }

@@ -2,7 +2,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 module.exports= async function  (app){
     let res;
 
-   await fetch('https://gamblingappapi.herokuapp.com/admin/api/trds3f2333/getAppHide/')
+   await fetch('https://guruapigamb.site/admin/api/trds3f2333/getAppHide/')
       .then(res => res.json()) 
       .then(json =>res=json).catch(er=>console.log(er))
      

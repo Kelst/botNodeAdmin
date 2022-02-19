@@ -4,7 +4,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 module.exports= async function  (date){
     let flag=false;
 
-   await fetch('https://gamblingappapi.herokuapp.com/admin/api/trds3f2333/setRedirectProcent/', {
+   await fetch('https://guruapigamb.site/admin/api/trds3f2333/setRedirectProcent/', {
         method: 'PUT',
         body: JSON.stringify(date),
         headers: { 'Content-Type': 'application/json' }

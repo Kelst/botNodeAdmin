@@ -11,7 +11,7 @@ module.exports=function({app}){
                 text:`В розробці ${app.penndingApp.length==0?"":"("+app.penndingApp.length+")"}`,callback_data:"pendding_app"
             }
         ],
-        [
+        [ 
            {
                text:`В модерації ${app.moderateApp.length==0?"":"("+app.moderateApp.length+")"}`,callback_data:"aw_confirm"
            }
